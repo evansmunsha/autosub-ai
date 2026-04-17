@@ -6,15 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "check": "npm run lint && npm run build",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "worker": "node --experimental-strip-types worker/processor.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "@stripe/stripe-js": "^9.2.0",
+    "@uploadthing/react": "^7.3.3",
+    "bullmq": "^5.74.1",
+    "fluent-ffmpeg": "^2.1.3",
+    "ioredis": "^5.10.1",
     "next": "16.2.4",
+    "openai": "^6.34.0",
+    "pg": "^8.20.0",
+    "prisma": "^7.7.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "stripe": "^22.0.2",
+    "uploadthing": "^7.7.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/fluent-ffmpeg": "^2.1.28",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,0 +1,17 @@
+{
+  "name": "AutoSub AI",
+  "short_name": "AutoSub AI",
+  "description": "Upload long-form video and turn it into subtitle files with AI transcription, translation, and editing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

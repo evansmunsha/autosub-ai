@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// ── USER TABLE ───────────────────────────────
+// Stores people who use the app
+model User {
+  id        String   @id @default(cuid()) // unique ID like "clx1abc123"
+  email     String   @unique              // must be unique — no duplicates
+  createdAt DateTime @default(now())      // when they signed up
+  minutesUsed Int    @default(0)          // how many minutes processed so far
+  plan      String   @default("free")     // "free" or "pro"
+
+  // One user can have many tasks (they upload many videos)
+  tasks SubtitleTask[]
+}
+
+// ── SUBTITLE TASK TABLE ──────────────────────
+// Every time someone uploads a video, a new row is created here
+model SubtitleTask {
+  id          String   @id @default(cuid()) // unique ID for this task
+  createdAt   DateTime @default(now())      // when it was created
+  
+  fileName    String   // original file name like "special26.mp4"
+  fileUrl     String   // where the file is stored (UploadThing URL)
+  sourceLang  String   // language of the video e.g. "hi" for Hindi
+  targetLang  String   @default("en")       // language to translate TO
+
+  // Status tells us what stage the task is at:
+  // "waiting" → "extracting" → "transcribing" → "translating" → "done" → "failed"
+  status      String   @default("waiting")
+  progress    Int      @default(0)          // 0 to 100 percent
+  errorMsg    String?  // if something went wrong, the error message goes here
+
+  // The final output — stored as JSON string
+  subtitlesJson String? // the translated subtitle lines as JSON
+
+  // Which user this task belongs to (optional — allow anonymous)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+}
