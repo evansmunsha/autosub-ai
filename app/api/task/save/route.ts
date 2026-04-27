@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
 
 const subtitleLineSchema = z.object({
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = saveRequestSchema.parse(await request.json())
 
-    const task = await db.subtitleTask.findUnique({
+    const task = await getDb().subtitleTask.findUnique({
       where: { id: body.taskId },
       select: { id: true },
     })
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Task not found.' }, { status: 404 })
     }
 
-    await db.subtitleTask.update({
+    await getDb().subtitleTask.update({
       where: { id: body.taskId },
       data: {
         subtitlesJson: JSON.stringify(body.subtitles),

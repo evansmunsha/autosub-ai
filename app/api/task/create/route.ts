@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
 import { addToQueue } from '@/lib/queue'
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     
     // STEP 1: Create a record in the database
     // This is like opening a ticket — status starts as "waiting"
-    const task = await db.subtitleTask.create({
+    const task = await getDb().subtitleTask.create({
       data: {
         fileUrl,
         fileName:   fileName || 'video',
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     
   } catch (error) {
     if (taskId) {
-      await db.subtitleTask
+      await getDb().subtitleTask
         .update({
           where: { id: taskId },
           data: {

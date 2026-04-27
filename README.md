@@ -17,7 +17,9 @@ The workflow is:
 - Windows-safe worker temp storage
 - Chunked Whisper transcription for long-form uploads
 - Autosaving subtitle editor with AI polish route
-- Health check route at `/api/health`
+- Liveness route at `/api/health`
+- Readiness route at `/api/ready`
+- Local environment and dependency audit via `npm run doctor`
 
 ## Required environment variables
 
@@ -32,6 +34,19 @@ Copy `.env.example` to `.env` and update the values.
 
 ## Local development on Windows
 
+You need two local services available before jobs can process:
+
+- PostgreSQL reachable from `DATABASE_URL`
+- Redis reachable from `REDIS_URL`
+
+This machine currently has PostgreSQL working, but no Redis service is installed or running, so `/api/ready` and `npm run doctor` will stay red until Redis is available on `127.0.0.1:6379` or the env value is changed to a working Redis host.
+
+Common Windows options for Redis are:
+
+- Memurai running as a Windows service
+- Redis inside WSL and exposed to Windows
+- A hosted Redis instance with `REDIS_URL` pointed at it
+
 1. Install dependencies:
 
 ```bash
@@ -45,18 +60,6 @@ npm run db:generate
 ```
 
 3. Create or update your database schema:
-
-
-
-git init
-git add .
-git commit -m "first commit"
-git branch -M master
-git remote add origin https://github.com/evansmunsha/autosub-ai.git
-git push -u origin master
-
-
-
 
 ```bash
 npm run db:migrate
@@ -74,9 +77,12 @@ npm run dev
 npm run worker
 ```
 
+The worker now loads `.env` automatically, so the same local environment file is used by both the Next.js app and the background processor.
+
 ## Verification commands
 
 ```bash
+npm run doctor
 npm run lint
 npm run build
 ```
@@ -92,4 +98,5 @@ npm run build
 - `/api/task/progress`: poll task status
 - `/api/task/rewrite`: AI polish subtitles and persist the result
 - `/api/task/save`: save editor changes
-- `/api/health`: health check for database and Redis
+- `/api/health`: liveness and environment summary
+- `/api/ready`: strict readiness check for env, PostgreSQL, and Redis

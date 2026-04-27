@@ -5,8 +5,8 @@
 // We need those timestamps to sync subtitles with the video.
 
 import fs from 'fs'
-import type { AudioChunk } from './ffmpeg'
-import { getOpenAIClient } from './openai'
+import type { AudioChunk } from './ffmpeg.ts'
+import { getOpenAIClient } from './openai.ts'
 
 // This is the shape of each subtitle segment Whisper returns
 export interface TranscriptSegment {

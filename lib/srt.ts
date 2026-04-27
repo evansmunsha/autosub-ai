@@ -13,7 +13,7 @@
 //
 // This file has functions to build and parse that format.
 
-import { TranslatedSegment } from './translate'
+import { TranslatedSegment } from './translate.ts'
 
 /**
  * secondsToSrtTime

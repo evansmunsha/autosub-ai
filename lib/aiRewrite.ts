@@ -5,7 +5,7 @@
 // Think of it as a "polish pass" — the meaning stays the same
 // but the phrasing becomes more natural and cinematic.
 
-import { getOpenAIClient, parseJsonResponse } from './openai'
+import { getOpenAIClient, parseJsonResponse } from './openai.ts'
 
 export interface SubtitleLine {
   id: number

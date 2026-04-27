@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { rewriteSubtitles } from '@/lib/aiRewrite'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
 import {
   mergeSubtitleTextUpdates,
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = rewriteRequestSchema.parse(await request.json())
 
-    const task = await db.subtitleTask.findUnique({
+    const task = await getDb().subtitleTask.findUnique({
       where: { id: body.taskId },
       select: { subtitlesJson: true },
     })
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       rewritten
     )
 
-    await db.subtitleTask.update({
+    await getDb().subtitleTask.update({
       where: { id: body.taskId },
       data: {
         subtitlesJson: JSON.stringify(nextSubtitles),

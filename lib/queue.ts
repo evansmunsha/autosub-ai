@@ -5,7 +5,7 @@
 // The worker (worker/processor.ts) picks it up and processes it.
 
 import { Queue, type JobsOptions } from 'bullmq'
-import { getRedis } from './redis'
+import { getRedis } from './redis.ts'
 
 let subtitleQueue: Queue<SubtitleTaskData> | null = null
 

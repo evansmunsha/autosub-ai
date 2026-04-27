@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Worker } from 'bullmq'
 import fs from 'fs'
 import os from 'os'
@@ -5,15 +6,16 @@ import path from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import type { ReadableStream as WebReadableStream } from 'stream/web'
-import { db } from '../lib/db'
-import { getErrorMessage } from '../lib/errors'
-import { extractAudio, splitAudioForTranscription } from '../lib/ffmpeg'
-import { SubtitleTaskData } from '../lib/queue'
-import { getRedis } from '../lib/redis'
-import { segmentsToJson } from '../lib/srt'
-import { buildSrtFromSubtitleLines, parseSubtitleLines } from '../lib/subtitles'
-import { translateSegments } from '../lib/translate'
-import { transcribeAudio } from '../lib/whisper'
+import { getDb } from '../lib/db.ts'
+import { assertEnvTarget, getWorkerConcurrency } from '../lib/env.ts'
+import { getErrorMessage } from '../lib/errors.ts'
+import { extractAudio, splitAudioForTranscription } from '../lib/ffmpeg.ts'
+import { SubtitleTaskData } from '../lib/queue.ts'
+import { getRedis } from '../lib/redis.ts'
+import { segmentsToJson } from '../lib/srt.ts'
+import { buildSrtFromSubtitleLines, parseSubtitleLines } from '../lib/subtitles.ts'
+import { translateSegments } from '../lib/translate.ts'
+import { transcribeAudio } from '../lib/whisper.ts'
 
 async function downloadFile(url: string, destPath: string) {
   const response = await fetch(url)
@@ -40,13 +42,15 @@ async function updateTask(
   progress: number,
   extra?: Record<string, string | number | null>
 ) {
-  await db.subtitleTask.update({
+  await getDb().subtitleTask.update({
     where: { id: taskId },
     data: { status, progress, ...extra },
   })
 
   console.log(`Task ${taskId}: ${status} (${progress}%)`)
 }
+
+assertEnvTarget('worker')
 
 const worker = new Worker<SubtitleTaskData>(
   'subtitle-processing',
@@ -113,7 +117,7 @@ const worker = new Worker<SubtitleTaskData>(
   },
   {
     connection: getRedis(),
-    concurrency: Number(process.env.WORKER_CONCURRENCY ?? 2),
+    concurrency: getWorkerConcurrency(),
   }
 )
 

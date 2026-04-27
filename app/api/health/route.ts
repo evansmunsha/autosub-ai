@@ -1,29 +1,19 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { getErrorMessage } from '@/lib/errors'
-import { getRedis } from '@/lib/redis'
+import { getEnvAudit } from '@/lib/env'
 
 export const runtime = 'nodejs'
 
 export async function GET() {
-  try {
-    await db.$queryRaw`SELECT 1`
-    await getRedis().ping()
+  const envAudit = getEnvAudit('production')
 
-    return NextResponse.json({
-      ok: true,
-      services: {
-        database: 'up',
-        redis: 'up',
-      },
-    })
-  } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: getErrorMessage(error, 'Health check failed.'),
-      },
-      { status: 503 }
-    )
-  }
+  return NextResponse.json({
+    ok: true,
+    status: 'live',
+    checkedAt: new Date().toISOString(),
+    environment: {
+      ok: envAudit.ok,
+      missing: envAudit.missing,
+      invalid: envAudit.invalid,
+    },
+  })
 }

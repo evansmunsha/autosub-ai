@@ -1,7 +1,7 @@
 // app/api/task/progress/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { getErrorMessage } from '@/lib/errors'
 import { parseSubtitleLines, type SubtitleLine } from '@/lib/subtitles'
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
     // Always fetch subtitlesJson — we decide below whether to send it
     // We can't reference 'task' inside the query that creates 'task'
-    const task = await db.subtitleTask.findUnique({
+    const task = await getDb().subtitleTask.findUnique({
       where: { id: taskId },
       select: {
         id:            true,

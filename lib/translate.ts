@@ -4,8 +4,8 @@
 // We send segments in BATCHES of 20 at a time — this is faster
 // and cheaper than sending one line at a time.
 
-import { TranscriptSegment } from './whisper'
-import { getOpenAIClient, parseJsonResponse } from './openai'
+import { TranscriptSegment } from './whisper.ts'
+import { getOpenAIClient, parseJsonResponse } from './openai.ts'
 
 // Map language codes to human-readable names for the prompt
 const LANGUAGE_NAMES: Record<string, string> = {

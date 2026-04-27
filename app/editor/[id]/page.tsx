@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SubtitleEditor from '@/components/SubtitleEditor'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { parseSubtitleLines } from '@/lib/subtitles'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 export default async function EditorPage({ params }: Props) {
   const { id } = await params
 
-  const task = await db.subtitleTask.findUnique({
+  const task = await getDb().subtitleTask.findUnique({
     where: { id },
     select: {
       id: true,

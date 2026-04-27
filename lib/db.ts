@@ -1,26 +1,23 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
-
-function getDatabaseUrl() {
-  const databaseUrl = process.env.DATABASE_URL
-
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL is not configured.')
-  }
-
-  return databaseUrl
-}
+import { getRequiredEnvValue } from './env.ts'
 
 declare global {
   var prisma: PrismaClient | undefined
 }
 
-export const db =
-  globalThis.prisma ??
-  new PrismaClient({
-    adapter: new PrismaPg({ connectionString: getDatabaseUrl() }),
+export function getDb() {
+  if (globalThis.prisma) {
+    return globalThis.prisma
+  }
+
+  const client = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: getRequiredEnvValue('DATABASE_URL') }),
   })
 
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.prisma = db
+  if (process.env.NODE_ENV !== 'production') {
+    globalThis.prisma = client
+  }
+
+  return client
 }
